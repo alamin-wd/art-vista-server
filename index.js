@@ -20,12 +20,17 @@ const client = new MongoClient(uri, {
     }
 });
 
+let craftItemCollection;
+
+
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
+        craftItemCollection = client.db('craftItemDB').collection('craftItem');
 
+        // userCollection = client.db('userDB').collection('user');
 
 
         // Send a ping to confirm a successful connection
@@ -36,6 +41,29 @@ async function run() {
         // await client.close();
     }
 }
+
+// app.get('/craftItem', async (req, res) => {
+
+//     const cursor = craftItemCollection.find();
+//     const result = await cursor.toArray();
+
+//     res.send(result);
+// })
+
+// Add Craft Item 
+app.post('/craftItem', async (req, res) => {
+    const newCraftItem = req.body;
+    console.log(newCraftItem);
+
+    try {
+        const result = await craftItemCollection.insertOne(newCraftItem);
+        res.send(result);
+    } catch (error) {
+        console.error('Error Inserting Craft Item, error');
+        res.json({ error: 'Failed to Add Craft Item' });
+    }
+})
+
 run().catch(console.dir);
 
 
