@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -42,15 +42,7 @@ async function run() {
     }
 }
 
-// app.get('/craftItem', async (req, res) => {
-
-//     const cursor = craftItemCollection.find();
-//     const result = await cursor.toArray();
-
-//     res.send(result);
-// })
-
-// Add Craft Item 
+// Add(Create) Craft Item 
 app.post('/craftItem', async (req, res) => {
     const newCraftItem = req.body;
     console.log(newCraftItem);
@@ -62,6 +54,25 @@ app.post('/craftItem', async (req, res) => {
         console.error('Error Inserting Craft Item, error');
         res.json({ error: 'Failed to Add Craft Item' });
     }
+})
+
+// Get(Read) Craft Items
+app.get('/craftItems', async (req, res) => {
+
+    const cursor = craftItemCollection.find();
+    const result = await cursor.toArray();
+
+    res.send(result);
+})
+
+// Get Single Craft Item
+app.get('/craftItem/:id', async (req, res)=>{
+
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await craftItemCollection.findOne(query);
+
+    res.send(result);
 })
 
 run().catch(console.dir);
