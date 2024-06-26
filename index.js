@@ -21,7 +21,7 @@ const client = new MongoClient(uri, {
 });
 
 let craftItemCollection;
-
+let userCollection;
 
 async function run() {
     try {
@@ -30,7 +30,7 @@ async function run() {
 
         craftItemCollection = client.db('craftItemDB').collection('craftItem');
 
-        // userCollection = client.db('userDB').collection('user');
+        userCollection = client.db('userDB').collection('user');
 
 
         // Send a ping to confirm a successful connection
@@ -66,13 +66,76 @@ app.get('/craftItems', async (req, res) => {
 })
 
 // Get Single Craft Item
-app.get('/craftItem/:id', async (req, res)=>{
+app.get('/craftItem/:id', async (req, res) => {
 
     const id = req.params.id;
     const query = { _id: new ObjectId(id) };
     const result = await craftItemCollection.findOne(query);
 
     res.send(result);
+})
+
+// app.get('/craftItem/:userName', async (req, res) => {
+
+//     const userName = req.params.userName;
+//     const query = { userName: new ObjectId(userName) };
+//     const result = await craftItemCollection.findOne(query);
+
+//     res.send(result);
+// })
+
+// Update Craft Items
+app.put('/craftItem/:id', async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const options = { upsert: true };
+
+    const updatedCraftItem = req.body;
+
+    const craftItem = {
+
+        $set: {
+            craftItemName: updatedCraftItem.craftItemName,
+            sub_categoryName: updatedCraftItem.sub_categoryName,
+            price: updatedCraftItem.price,
+            rating: updatedCraftItem.rating,
+            processingTime: updatedCraftItem.processingTime,
+            customization: updatedCraftItem.customization,
+            stockStatus: updatedCraftItem.stockStatus,
+            imageURL: updatedCraftItem.imageURL,
+            shortDescription: updatedCraftItem.shortDescription
+        }
+
+    }
+
+    const result = await craftItemCollection.updateOne(filter, craftItem, options);
+    res.send(result);
+})
+
+// Delete Craft Items
+// app.delete('/craftItem/:id', async (req, res) => {
+
+//     const id = req.params.id;
+//     const query = { _id: new ObjectId(id) };
+//     const result = await craftItemCollection.deleteOne(query);
+
+//     res.send(result);
+// })
+
+
+//  User Related API's
+// Add(Create) User
+app.post('/user', async (req, res) => {
+    const user = req.body;
+    console.log(user);
+
+    try {
+        const result = await craftItemCollection.insertOne(user);
+        res.send(result);
+    } catch (error) {
+        console.error('Error Inserting User Info error');
+        res.json({ error: 'Failed to Add User Info' });
+    }
 })
 
 run().catch(console.dir);
