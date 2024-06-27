@@ -136,13 +136,6 @@ app.post('/user', async (req, res) => {
 
     const result = await userCollection.insertOne(user);
     res.send(result);
-    // try {
-    //     const result = await craftItemCollection.insertOne(user);
-    //     res.send(result);
-    // } catch (error) {
-    //     console.error('Error Inserting User Info error');
-    //     res.json({ error: 'Failed to Add User Info' });
-    // }
 })
 
 run().catch(console.dir);
