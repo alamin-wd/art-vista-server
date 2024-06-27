@@ -29,8 +29,7 @@ async function run() {
         await client.connect();
 
         craftItemCollection = client.db('craftItemDB').collection('craftItem');
-
-        userCollection = client.db('userDB').collection('user');
+        userCollection = client.db('craftItemDB').collection('user');
 
 
         // Send a ping to confirm a successful connection
@@ -75,14 +74,20 @@ app.get('/craftItem/:id', async (req, res) => {
     res.send(result);
 })
 
-// app.get('/craftItem/:userName', async (req, res) => {
+app.get('/craftItems/:userName', async (req, res) => {
+    const userName = req.params.userName;
+    const query = { userName };
 
-//     const userName = req.params.userName;
-//     const query = { userName: new ObjectId(userName) };
-//     const result = await craftItemCollection.findOne(query);
+    try {
+        const cursor = await craftItemCollection.find(query);
+        const result = await cursor.toArray();
+        res.json(result);
 
-//     res.send(result);
-// })
+    } catch (error) {
+        console.error('Error fetching craft items:', error);
+
+    }
+});
 
 // Update Craft Items
 app.put('/craftItem/:id', async (req, res) => {
@@ -129,13 +134,15 @@ app.post('/user', async (req, res) => {
     const user = req.body;
     console.log(user);
 
-    try {
-        const result = await craftItemCollection.insertOne(user);
-        res.send(result);
-    } catch (error) {
-        console.error('Error Inserting User Info error');
-        res.json({ error: 'Failed to Add User Info' });
-    }
+    const result = await userCollection.insertOne(user);
+    res.send(result);
+    // try {
+    //     const result = await craftItemCollection.insertOne(user);
+    //     res.send(result);
+    // } catch (error) {
+    //     console.error('Error Inserting User Info error');
+    //     res.json({ error: 'Failed to Add User Info' });
+    // }
 })
 
 run().catch(console.dir);
