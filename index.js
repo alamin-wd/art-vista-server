@@ -74,20 +74,21 @@ app.get('/craftItem/:id', async (req, res) => {
     res.send(result);
 })
 
-app.get('/craftItems/:userName', async (req, res) => {
-    const userName = req.params.userName;
-    const query = { userName };
+// GET craft items by user email
+app.get('/craftItems/user/:userEmail', async (req, res) => {
+    const userEmail = req.params.userEmail;
+    const query = { userEmail }; 
 
     try {
         const cursor = await craftItemCollection.find(query);
         const result = await cursor.toArray();
-        res.json(result);
-
+        res.json(result); 
     } catch (error) {
         console.error('Error fetching craft items:', error);
-
+        res.status(500).json({ error: 'Failed to fetch craft items' });
     }
 });
+
 
 // Update Craft Items
 app.put('/craftItem/:id', async (req, res) => {
@@ -129,6 +130,7 @@ app.put('/craftItem/:id', async (req, res) => {
 
 
 //  User Related API's
+
 // Add(Create) User
 app.post('/user', async (req, res) => {
     const user = req.body;
